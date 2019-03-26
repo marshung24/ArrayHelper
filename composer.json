@@ -1,7 +1,7 @@
 {
-    "name": "marshung/helper",
-    "description": "PHP Helpers liberaries",
-    "homepage": "https://github.com/marshung24/io",
+    "name": "marsapp/arrayhelper",
+    "description": "ArrayHelper liberary, providing functions such as rebuilding indexes, grouping, getting content, recursive difference sets, recursive sorting, etc.",
+    "homepage": "https://github.com/marshung24/ArrayHelper",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -11,9 +11,12 @@
         }
     ],
     "autoload": {
-        "psr-4": { "marshung\\helper\\": "src", "marshung\\helperTest\\": "test" }
+        "psr-4": { "marsapp\\helper\\myarray\\": "src", "marsapp\\helper\\test\\myarray\\": "test"}
     },
     "minimum-stability": "stable",
+    "require-dev": {
+        "marsapp/devtools": "*"
+    },
     "require": {
     }
 }

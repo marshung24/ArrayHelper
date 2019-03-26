@@ -1,5 +1,5 @@
 <?php
-namespace marshung\helper;
+namespace marsapp\helper\myarray;
 
 /**
  * Array Helper for PHP code
