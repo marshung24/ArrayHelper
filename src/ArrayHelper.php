@@ -2,9 +2,13 @@
 namespace marsapp\helper\myarray;
 
 /**
- * Array Helper for PHP code
+ * Array Helper
  * 
+ * Array processing library, providing functions such as rebuilding indexes, grouping, getting content, recursive difference sets, recursive sorting, etc.
+ * 
+ * @version 0.2.0
  * @author Mars Hung <tfaredxj@gmail.com>
+ * @see https://github.com/marshung24/ArrayHelper
  */
 class ArrayHelper
 {
@@ -69,6 +73,7 @@ class ArrayHelper
      * - var_export(ArrayHelper::getContent($data)); // full $data content
      * - var_export(ArrayHelper::getContent($data, 'user')); // ['name' => 'Mars', 'birthday' => '2000-01-01']
      * - var_export(ArrayHelper::getContent($data, ['user', 'name'])); // Mars
+     * - var_export(ArrayHelper::getContent($data, 'user, name')); // Mars
      * - var_export(ArrayHelper::getContent($data, ['user', 'name', 'aaa'])); // []
      * 
      * @param array $data
@@ -79,8 +84,10 @@ class ArrayHelper
      */
     public static function getContent(Array $data, $indexTo = [], $exception = false)
     {
-        //* Arguments prepare */
-        $indexTo = (array)$indexTo;
+            /* Arguments prepare */
+        if (is_string($indexTo)) {
+            $indexTo = array_map('trim', explode(',', $indexTo));
+        }
         $indexed = [];
         
         foreach ($indexTo as $idx) {
@@ -234,6 +241,35 @@ class ArrayHelper
         foreach ($srcArray as $key => & $value) {
             is_array($value) && self::sortRecursive($value, $type);
         }
+    }
+    
+    /**
+     * Filter array according to the allowed keys
+     * 
+     * $nArray = ArrayHelper::filterKey($array, ['id', 'firstName', 'lastName', 'gender']);
+     * $nArray = ArrayHelper::filterKey($array, 'id, firstName, lastName, gender');
+     * 
+     * @param array $array The array to compare from
+     * @param array|string $keys Key list to compare against
+     * @param bool $fillKey Fill the key that does not exist in the array, default true
+     * @return array
+     */
+    public static function filterKey(Array $array, $keys, $fillKey = true)
+    {
+        /*** Arguments prepare ***/
+        // keys prepare
+        if (is_string($keys)) {
+            $keys = array_map('trim', explode(',', $keys));
+        }
+        
+        $keysFlip = array_fill_keys($keys, '');
+        
+        // Fill the key
+        if ($fillKey) {
+            $array = $array + $keysFlip;
+        }
+        
+        return array_intersect_key($array, $keysFlip);
     }
     
     /**

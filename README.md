@@ -6,10 +6,18 @@ Array processing library, providing functions such as rebuilding indexes, groupi
 [![Latest Stable Version](https://poser.pugx.org/marsapp/arrayhelper/v/stable)](https://packagist.org/packages/marsapp/arrayhelper) [![Total Downloads](https://poser.pugx.org/marsapp/arrayhelper/downloads)](https://packagist.org/packages/marsapp/arrayhelper) [![Latest Unstable Version](https://poser.pugx.org/marsapp/arrayhelper/v/unstable)](https://packagist.org/packages/marsapp/arrayhelper) [![License](https://poser.pugx.org/marsapp/arrayhelper/license)](https://packagist.org/packages/marsapp/arrayhelper)
 
 # Outline
-- [Installation](#Installation)
-- [Usage](#Usage)
-  - [ArrayHelper](#ArrayHelper)
-
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Example](#example)
+- [API Reference](#api-reference)
+ - [indexBy()](#indexby)
+ - [groupBy()](#groupby)
+ - [indexOnly()](#indexonly)
+ - [getContent()](#getcontent)
+ - [gather()](#gather)
+ - [diffRecursive()](#diffrecursive)
+ - [sortRecursive()](#sortrecursive)
+ - [filterKey()](#filterkey)
 
 # [Installation](#Outline)
 ## Composer Install
@@ -24,15 +32,28 @@ require __PATH__ . "vendor/autoload.php";
 ```
 
 # [Usage](#Outline)
-## [ArrayHelper](#Outline)
+## [Example](#Outline)
 Namespace use:
 ```php
+// Use namespace
 use marsapp\helper\myarray\ArrayHelper;
+
+// Data
+$data = [
+    ['c_sn' => 'a110', 'u_sn' => 'b1', 'u_no' => 'a001', 'u_name' => 'name1'],
+    ['c_sn' => 'a110', 'u_sn' => 'b2', 'u_no' => 'b012', 'u_name' => 'name2'],
+];
+
+// Index by
+ArrayHelper::indexBy($data, ['c_sn', 'u_no']);
+
+// Get name by a110 => a001 => u_name
+$name = ArrayHelper::getContent($data, 'a110, a001, u_name');
+// $name = name1;
 ```
 
-
-
-### indexBy()
+# [API Reference](#outline)
+## indexBy()
 Data re-index by keys
 ```php
 indexBy(Array & $data, Array|String $keys, Bool $obj2array = false) : array
@@ -49,21 +70,16 @@ $data = [
 ];
 
 ArrayHelper::indexBy($data, ['c_sn','u_sn','u_no']);
-```
-
-$data reqult:
-```php
-[
-    'a110' => [
-        'b1' => ['a001' => ['c_sn' => 'a110', 'u_sn' => 'b1', 'u_no' => 'a001', 'u_name' => 'name1']],
-        'b2' => ['b012' => ['c_sn' => 'a110', 'u_sn' => 'b2', 'u_no' => 'b012', 'u_name' => 'name2']],
-    ],
-];
-
+// $data = [
+//    'a110' => [
+//        'b1' => ['a001' => ['c_sn' => 'a110', 'u_sn' => 'b1', 'u_no' => 'a001', 'u_name' => 'name1']],
+//        'b2' => ['b012' => ['c_sn' => 'a110', 'u_sn' => 'b2', 'u_no' => 'b012', 'u_name' => 'name2']],
+//    ],
+// ];
 ```
 
 
-### groupBy()
+## groupBy()
 Data re-index and Group by keys
 ```php
 groupBy(Array & $data, Array|String $keys, Bool $obj2array = false) : array
@@ -100,7 +116,7 @@ $data reqult:
 ];
 ```
 
-### indexOnly()
+## indexOnly()
 Data re-index by keys, No Data
 ```php
 indexOnly(Array & $data, Array|String $keys, Bool $obj2array = false) : array
@@ -134,7 +150,7 @@ $data reqult:
 ```
 
 
-### getContent()
+## getContent()
 Get Data content by index
 ```php
 getContent(Array $data, Array|String $indexTo = [], Bool $exception = false) : array|mixed
@@ -144,23 +160,28 @@ Example:
 ```php
 $data = ['user' => ['name' => 'Mars', 'birthday' => '2000-01-01']];
 
+// No indexTo, get all
 $output = ArrayHelper::getContent($data);
 // $output: ['user' => ['name' => 'Mars', 'birthday' => '2000-01-01']];
 
+// Target is array
 $output = ArrayHelper::getContent($data, 'user');
-  // or
 $output = ArrayHelper::getContent($data, ['user']);
 // $output: ['name' => 'Mars', 'birthday' => '2000-01-01'];
 
+// Target is string
+$output = ArrayHelper::getContent($data, 'user, name');
 $output = ArrayHelper::getContent($data, ['user', 'name']);
 // $outpu: Mars
 
+// No target
+$output = ArrayHelper::getContent($data, 'user, name, aaa');
 $output = ArrayHelper::getContent($data, ['user', 'name', 'aaa']);
 // $outpu: []
 ```
 
 
-### gather()
+## gather()
 Data gather by list
 > Collect and classify target data according to the list of fields
 
@@ -203,7 +224,7 @@ $ssnList2 reqult:
 ```
 
 
-### diffRecursive()
+## diffRecursive()
 Array Deff Recursive
 > Compare $srcArray with $contrast and display it if something on $srcArray is not on $contrast.
 ```php
@@ -234,7 +255,7 @@ $diff result :
 ```
 
 
-### sortRecursive()
+## sortRecursive()
 Array Sort Recursive
 ```php
 sortRecursive(Array & $srcArray, $type = 'ksort') : void
@@ -284,4 +305,33 @@ $data2 result:
         0 => ['u_sn' => 'b1','u_no' => 'a001','u_name' => 'name1','c_sn' => 'a110']
     ]
 ];
+```
+
+## [filterKey()](#outline)
+Filter array according to the allowed keys
+
+```php
+filterKey(Array $array, $keys, $fillKey = true) : array
+```
+> Parameters
+> - $array: The array to compare from. array
+> - $keys: Key list to compare against. array|string
+> - $fillKey: Fill the key that does not exist in the array, default true. bool
+> 
+> Return Values
+> - Returns the resulting array.
+
+Example :
+```php
+$array = ['sn' => '1785','m_sn' => '40','d_sn' => '751','r_type' => 'staff','manager' => '1','s_manager' => '1','c_user' => '506'];
+
+// fill key
+$result = ArrayHelper::filterKey($array, ['sn', 'd_sn', 'r_type', 'manager', 'nooooooooo']);
+$result = ArrayHelper::filterKey($array, 'sn,d_sn, r_type, manager, nooooooooo');
+// $result = ['sn' => '1785','d_sn' => '751','r_type' => 'staff','manager' => '1', 'nooooooooo' => ''];
+
+// No fill key
+$result = ArrayHelper::filterKey($array, ['sn', 'd_sn', 'r_type', 'manager', 'nooooooooo'], false);
+$result = ArrayHelper::filterKey($array, 'sn,d_sn, r_type, manager, nooooooooo', false);
+// $result = ['sn' => '1785','d_sn' => '751','r_type' => 'staff','manager' => '1'];
 ```

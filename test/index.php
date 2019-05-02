@@ -80,7 +80,7 @@ function indexOnly()
     DevTools::isTheSame($theSame, __FUNCTION__);
 }
 
-function getContent()
+function getContent($detail = false)
 {
     $data = ['user' => ['name' => 'Mars', 'birthday' => '2000-01-01']];
     
@@ -88,23 +88,32 @@ function getContent()
     
     $output = ArrayHelper::getContent($data);
     // $output: ['user' => ['name' => 'Mars', 'birthday' => '2000-01-01']];
-    $theSame = $theSame && DevTools::theSame($output, ['user' => ['name' => 'Mars', 'birthday' => '2000-01-01']]);
+    $theSame = $theSame && DevTools::theSame($output, ['user' => ['name' => 'Mars', 'birthday' => '2000-01-01']], $detail);
+    
     
     
     $output = ArrayHelper::getContent($data, 'user');
-    $theSame = $theSame && DevTools::theSame($output, ['name' => 'Mars', 'birthday' => '2000-01-01']);
+    $theSame = $theSame && DevTools::theSame($output, ['name' => 'Mars', 'birthday' => '2000-01-01'], $detail);
     // or
     $output = ArrayHelper::getContent($data, ['user']);
     // $output: ['name' => 'Mars', 'birthday' => '2000-01-01'];
-    $theSame = $theSame && DevTools::theSame($output, ['name' => 'Mars', 'birthday' => '2000-01-01']);
+    $theSame = $theSame && DevTools::theSame($output, ['name' => 'Mars', 'birthday' => '2000-01-01'], $detail);
+    
+    
     
     $output = ArrayHelper::getContent($data, ['user', 'name']);
     // $outpu: Mars
-    $theSame = $theSame && $output==='Mars';
+    $theSame = $theSame && DevTools::theSame($output, 'Mars', $detail);
+    
+    $output = ArrayHelper::getContent($data, 'user, name');
+    // $outpu: Mars
+    $theSame = $theSame && DevTools::theSame($output, 'Mars', $detail);
+    
+    
     
     $output = ArrayHelper::getContent($data, ['user', 'name', 'aaa']);
     // $outpu: []
-    $theSame = $theSame && DevTools::theSame($output, []);
+    $theSame = $theSame && DevTools::theSame($output, [], $detail);
     
     DevTools::isTheSame($theSame, __FUNCTION__);
 }
@@ -203,6 +212,29 @@ function sortRecursive()
     DevTools::isTheSame($theSame, __FUNCTION__);
 }
 
+function filterKey($detail = false)
+{
+    $array = ['sn' => '1785','m_sn' => '40','d_sn' => '751','r_type' => 'staff','manager' => '1','s_manager' => '1','c_user' => '506'];
+    $expected1 = ['sn' => '1785','d_sn' => '751','r_type' => 'staff','manager' => '1', 'nooooooooo' => ''];
+    $expected2 = ['sn' => '1785','d_sn' => '751','r_type' => 'staff','manager' => '1'];
+    
+    // fill key
+    $nArray1 = ArrayHelper::filterKey($array, ['sn', 'd_sn', 'r_type', 'manager', 'nooooooooo']);
+    $nArray2 = ArrayHelper::filterKey($array, 'sn,d_sn, r_type, manager, nooooooooo');
+    
+    // No fill key
+    $nArray3 = ArrayHelper::filterKey($array, ['sn', 'd_sn', 'r_type', 'manager', 'nooooooooo'], false);
+    $nArray4 = ArrayHelper::filterKey($array, 'sn,d_sn, r_type, manager, nooooooooo', false);
+    
+    $theSame = true;
+    // fill key
+    $theSame = $theSame && DevTools::theSame($nArray1, $expected1, $detail);
+    $theSame = $theSame && DevTools::theSame($nArray2, $expected1, $detail);
+    // No fill key
+    $theSame = $theSame && DevTools::theSame($nArray3, $expected2, $detail);
+    $theSame = $theSame && DevTools::theSame($nArray4, $expected2, $detail);
+    DevTools::isTheSame($theSame, __FUNCTION__);
+}
 
 echo "<pre>";
 
@@ -213,6 +245,7 @@ getContent();
 gather();
 diffRecursive();
 sortRecursive();
+filterKey();
 
 
 
