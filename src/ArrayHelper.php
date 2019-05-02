@@ -6,12 +6,20 @@ namespace marsapp\helper\myarray;
  * 
  * Array processing library, providing functions such as rebuilding indexes, grouping, getting content, recursive difference sets, recursive sorting, etc.
  * 
- * @version 0.2.0
+ * @version 0.3.1
  * @author Mars Hung <tfaredxj@gmail.com>
  * @see https://github.com/marshung24/ArrayHelper
  */
 class ArrayHelper
 {
+    /**
+     * Option set
+     * @var array
+     */
+    protected static $_options = [
+        // Default sort out
+        'sortOut' => true,
+    ];
     
     /**
      * *********************************************
@@ -109,6 +117,44 @@ class ArrayHelper
         }
         
         return $data;
+    }
+    
+    /**
+     * Get fall point content
+     * 
+     * 1. Get the data in an ordered non-contiguous index array. Such as:
+     * - $data = ['2019-05-01' => '20', '2019-06-01' => '30', '2019-06-15' => '50'];
+     * - $value = ArrayHelper::getFallContent($data, '2019-06-11', false); // $value = 30;
+     * 2. If there is no fall point, return null.
+     * 3. Ensure performance by sorting $data ahead of time:
+     * - a. Sorting $data (ASC)
+     * - b. Close $sortOut
+     * - c. Use function ArrayHelper::getFallContent()
+     * 
+     * @param array $data
+     * @param string $referKey
+     * @param string $sortOut Whether the input needs to be rearranged. Value: true, false, 'default'. If it is 'default', see getSortOut()
+     * @return mixed
+     */
+    public static function getFallContent(Array $data, $referKey, $sortOut = 'default')
+    {
+        /*** Arguments prepare ***/
+        // Data sorting out
+        $sortOut = $sortOut === 'default' ? self::getSortOut() : ! ! $sortOut;
+        if ($sortOut) {
+            ksort($data);
+        }
+        
+        // Fall point content
+        $opt = null;
+        foreach ($data as $key => $value) {
+            if ($key > $referKey) {
+                break;
+            }
+            $opt = $value;
+        }
+        
+        return $opt;
     }
     
     /**
@@ -270,6 +316,37 @@ class ArrayHelper
         }
         
         return array_intersect_key($array, $keysFlip);
+    }
+    
+    /**
+     * **********************************************
+     * ************** Options Function **************
+     * **********************************************
+     */
+    
+    /**
+     * Auto sort out : Set option
+     *
+     * 1. Scope: Global
+     *
+     * @param bool $bool default true
+     * @return $this
+     */
+    public static function setSortOut($bool = true)
+    {
+        self::$_options['sortOut'] = !!$bool;
+        
+        return new static();
+    }
+    
+    /**
+     * Auto sort out : Get option
+     *
+     * @return bool
+     */
+    public static function getSortOut()
+    {
+        return self::$_options['sortOut'];
     }
     
     /**

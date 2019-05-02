@@ -10,14 +10,15 @@ Array processing library, providing functions such as rebuilding indexes, groupi
 - [Usage](#usage)
   - [Example](#example)
 - [API Reference](#api-reference)
- - [indexBy()](#indexby)
- - [groupBy()](#groupby)
- - [indexOnly()](#indexonly)
- - [getContent()](#getcontent)
- - [gather()](#gather)
- - [diffRecursive()](#diffrecursive)
- - [sortRecursive()](#sortrecursive)
- - [filterKey()](#filterkey)
+  - [indexBy()](#indexby)
+  - [groupBy()](#groupby)
+  - [indexOnly()](#indexonly)
+  - [getContent()](#getcontent)
+  - [getFallContent()](#getfallcontent)
+  - [gather()](#gather)
+  - [diffRecursive()](#diffrecursive)
+  - [sortRecursive()](#sortrecursive)
+  - [filterKey()](#filterkey)
 
 # [Installation](#Outline)
 ## Composer Install
@@ -53,7 +54,7 @@ $name = ArrayHelper::getContent($data, 'a110, a001, u_name');
 ```
 
 # [API Reference](#outline)
-## indexBy()
+## [indexBy()](#outline)
 Data re-index by keys
 ```php
 indexBy(Array & $data, Array|String $keys, Bool $obj2array = false) : array
@@ -79,7 +80,7 @@ ArrayHelper::indexBy($data, ['c_sn','u_sn','u_no']);
 ```
 
 
-## groupBy()
+## [groupBy()](#outline)
 Data re-index and Group by keys
 ```php
 groupBy(Array & $data, Array|String $keys, Bool $obj2array = false) : array
@@ -116,7 +117,7 @@ $data reqult:
 ];
 ```
 
-## indexOnly()
+## [indexOnly()](#outline)
 Data re-index by keys, No Data
 ```php
 indexOnly(Array & $data, Array|String $keys, Bool $obj2array = false) : array
@@ -150,7 +151,7 @@ $data reqult:
 ```
 
 
-## getContent()
+## [getContent()](#outline)
 Get Data content by index
 ```php
 getContent(Array $data, Array|String $indexTo = [], Bool $exception = false) : array|mixed
@@ -180,8 +181,35 @@ $output = ArrayHelper::getContent($data, ['user', 'name', 'aaa']);
 // $outpu: []
 ```
 
+## [getFallContent()](#outline)
+Get fall point content
+> 1. Get the data in an ordered non-contiguous index array
+> 2. If there is no fall point, return null.
+> 3. Ensure performance by sorting $data ahead of time:
+>    - a. Sorting $data (ASC)
+>    - b. Close $sortOut
+>    - c. Use function ArrayHelper::getFallContent()
 
-## gather()
+```php
+getFallContent(Array $data, $referKey, $sortOut = 'default') : mixed
+```
+> Parameters
+> - $data: The array to compare from. array
+> - $referKey: Refer key to compare against. string
+> - $sortOut: Whether the input needs to be rearranged. Value: true, false, 'default'. If it is 'default', see getSortOut()
+> 
+> Return Values
+> - Returns the resulting mixed.
+
+Example :
+```php
+$data = ['2019-05-01' => '20', '2019-06-01' => '30', '2019-06-15' => '50'];
+$value = ArrayHelper::getFallContent($data, '2019-06-11', false);
+// $value = 30;
+```
+
+
+## [gather()](#outline)
 Data gather by list
 > Collect and classify target data according to the list of fields
 
@@ -224,7 +252,7 @@ $ssnList2 reqult:
 ```
 
 
-## diffRecursive()
+## [diffRecursive()](#outline)
 Array Deff Recursive
 > Compare $srcArray with $contrast and display it if something on $srcArray is not on $contrast.
 ```php
@@ -255,7 +283,7 @@ $diff result :
 ```
 
 
-## sortRecursive()
+## [sortRecursive()](#outline)
 Array Sort Recursive
 ```php
 sortRecursive(Array & $srcArray, $type = 'ksort') : void

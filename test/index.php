@@ -118,6 +118,16 @@ function getContent($detail = false)
     DevTools::isTheSame($theSame, __FUNCTION__);
 }
 
+function getFallContent($detail = false)
+{
+    $data = ['2019-05-01' => '20', '2019-06-01' => '30', '2019-06-15' => '50'];
+    $expected = '30';
+    
+    $value = ArrayHelper::getFallContent($data, '2019-06-11', false);
+    
+    $theSame = DevTools::theSame($value, $expected, $detail);
+    DevTools::isTheSame($theSame, __FUNCTION__);
+}
 
 function gather()
 {
@@ -242,6 +252,7 @@ indexBy();
 groupBy();
 indexOnly();
 getContent();
+getFallContent();
 gather();
 diffRecursive();
 sortRecursive();
