@@ -1,4 +1,5 @@
 <?php
+
 namespace marsapp\helper\myarray;
 
 /**
@@ -20,13 +21,13 @@ class ArrayHelper
         // Default sort out
         'sortOut' => true,
     ];
-    
+
     /**
      * *********************************************
      * ************** Public Function **************
      * *********************************************
      */
-    
+
     /**
      * Data re-index by keys
      *
@@ -35,12 +36,12 @@ class ArrayHelper
      * @param boolean $obj2array stdClass convert to array
      * @return mixed Result with indexBy Keys
      */
-    public static function indexBy(& $data, $keys, $obj2array = false)
+    public static function indexBy(&$data, $keys, $obj2array = false)
     {
         // Refactor Array $data structure by $keys
         return self::_refactorBy($data, $keys, $obj2array, $type = 'indexBy');
     }
-    
+
     /**
      * Group by keys
      * 
@@ -50,12 +51,12 @@ class ArrayHelper
      * @param string|array $keys
      * @param boolean $obj2array Array content convert to array (when object)
      */
-    public static function groupBy(& $data, $keys, $obj2array = false)
+    public static function groupBy(&$data, $keys, $obj2array = false)
     {
         // Refactor Array $data structure by $keys
         return self::_refactorBy($data, $keys, $obj2array, $type = 'groupBy');
     }
-    
+
     /**
      * Data re-index by keys, No Data
      *
@@ -63,12 +64,12 @@ class ArrayHelper
      * @param string|array $keys
      * @param boolean $obj2array Array content convert to array (when object)
      */
-    public static function indexOnly(& $data, $keys, $obj2array = false)
+    public static function indexOnly(&$data, $keys, $obj2array = false)
     {
         // Refactor Array $data structure by $keys
         return self::_refactorBy($data, $keys, $obj2array, $type = 'indexOnly');
     }
-    
+
     /**
      * Get Data content by index
      * 
@@ -90,18 +91,18 @@ class ArrayHelper
      * @throws \Exception
      * @return array|mixed
      */
-    public static function getContent(Array $data, $indexTo = [], $exception = false)
+    public static function getContent(array $data, $indexTo = [], $exception = false)
     {
-            /* Arguments prepare */
+        /* Arguments prepare */
         if (is_string($indexTo)) {
             $indexTo = array_map('trim', explode(',', $indexTo));
         }
         $indexed = [];
-        
+
         foreach ($indexTo as $idx) {
             // save runed index
             $indexed[] = $idx;
-            
+
             if (is_array($data) && array_key_exists($idx, $data)) {
                 // If exists, Get values by recursion
                 $data = $data[$idx];
@@ -115,10 +116,10 @@ class ArrayHelper
                 }
             }
         }
-        
+
         return $data;
     }
-    
+
     /**
      * Get fall point content
      * 
@@ -136,15 +137,15 @@ class ArrayHelper
      * @param string $sortOut Whether the input needs to be rearranged. Value: true, false, 'default'. If it is 'default', see getSortOut()
      * @return mixed
      */
-    public static function getFallContent(Array $data, $referKey, $sortOut = 'default')
+    public static function getFallContent(array $data, $referKey, $sortOut = 'default')
     {
         /*** Arguments prepare ***/
         // Data sorting out
-        $sortOut = $sortOut === 'default' ? self::getSortOut() : ! ! $sortOut;
+        $sortOut = $sortOut === 'default' ? self::getSortOut() : !!$sortOut;
         if ($sortOut) {
             ksort($data);
         }
-        
+
         // Fall point content
         $opt = null;
         foreach ($data as $key => $value) {
@@ -153,10 +154,10 @@ class ArrayHelper
             }
             $opt = $value;
         }
-        
+
         return $opt;
     }
-    
+
     /**
      * Data gather by list
      * 
@@ -189,10 +190,10 @@ class ArrayHelper
     public static function gather($data, $colNameList, $objLv = 1, $dataList = array())
     {
         // 將物件轉成陣列
-        $data = is_object($data) ? (array)$data : $data;
-        
+        $data = is_object($data) ? (array) $data : $data;
+
         // 遍歷陣列 - 只處理陣列
-        if (is_array($data) && ! empty($data)) {
+        if (is_array($data) && !empty($data)) {
             if ($objLv > 1) {
                 // === 超過1層 ===
                 foreach ($data as $k => $row) {
@@ -223,7 +224,7 @@ class ArrayHelper
                 }
             }
         }
-        
+
         return $dataList;
     }
 
@@ -236,15 +237,15 @@ class ArrayHelper
      * @param array $contrast            
      * @return array
      */
-    public static function diffRecursive(Array $srcArray, $contrast)
+    public static function diffRecursive(array $srcArray, $contrast)
     {
         $diffArray = [];
-        
+
         foreach ($srcArray as $key => $value) {
             if (is_array($contrast) && array_key_exists($key, $contrast)) {
                 if (is_array($value)) {
                     $aRecursiveDiff = self::diffRecursive($value, $contrast[$key]);
-                    if (! empty($aRecursiveDiff)) {
+                    if (!empty($aRecursiveDiff)) {
                         $diffArray[$key] = $aRecursiveDiff;
                     }
                 } elseif ($value != $contrast[$key]) {
@@ -254,7 +255,7 @@ class ArrayHelper
                 $diffArray[$key] = $value;
             }
         }
-        
+
         return $diffArray;
     }
 
@@ -264,10 +265,10 @@ class ArrayHelper
      * @param array $srcArray
      * @param string $type ksort(default), krsort, sort, rsort
      */
-    public static function sortRecursive(Array & $srcArray, $type = 'ksort')
+    public static function sortRecursive(array &$srcArray, $type = 'ksort')
     {
         // Run ksort(default), krsort, sort, rsort
-        switch($type) {
+        switch ($type) {
             case 'ksort':
             default:
                 ksort($srcArray);
@@ -282,13 +283,13 @@ class ArrayHelper
                 rsort($srcArray);
                 break;
         }
-        
+
         // If child element is array, recursive
-        foreach ($srcArray as $key => & $value) {
+        foreach ($srcArray as $key => &$value) {
             is_array($value) && self::sortRecursive($value, $type);
         }
     }
-    
+
     /**
      * Filter array according to the allowed keys
      * 
@@ -300,30 +301,30 @@ class ArrayHelper
      * @param bool $fillKey Fill the key that does not exist in the array, default true
      * @return array
      */
-    public static function filterKey(Array $array, $keys, $fillKey = true)
+    public static function filterKey(array $array, $keys, $fillKey = true)
     {
         /*** Arguments prepare ***/
         // keys prepare
         if (is_string($keys)) {
             $keys = array_map('trim', explode(',', $keys));
         }
-        
+
         $keysFlip = array_fill_keys($keys, '');
-        
+
         // Fill the key
         if ($fillKey) {
             $array = $array + $keysFlip;
         }
-        
+
         return array_intersect_key($array, $keysFlip);
     }
-    
+
     /**
      * **********************************************
      * ************** Options Function **************
      * **********************************************
      */
-    
+
     /**
      * Auto sort out : Set option
      *
@@ -335,10 +336,10 @@ class ArrayHelper
     public static function setSortOut($bool = true)
     {
         self::$_options['sortOut'] = !!$bool;
-        
+
         return new static();
     }
-    
+
     /**
      * Auto sort out : Get option
      *
@@ -348,13 +349,13 @@ class ArrayHelper
     {
         return self::$_options['sortOut'];
     }
-    
+
     /**
      * **********************************************
      * ************** Private Function **************
      * **********************************************
      */
-    
+
     /**
      * Refactor Array $data structure by $keys
      *
@@ -366,56 +367,56 @@ class ArrayHelper
      * @param string $type
      *            indexBy(index)/groupBy(group)/only index,no data(indexOnly/noData)
      */
-    protected static function _refactorBy(& $data, $keys, $obj2array = false, $type = 'index')
+    protected static function _refactorBy(&$data, $keys, $obj2array = false, $type = 'index')
     {
         // 參數處理
         $keys = (array) $keys;
-        
+
         $result = [];
-        
+
         // 遍歷待處理陣列
         foreach ($data as $row) {
             // 旗標，是否取得索引
             $getIndex = false;
             // 位置初炲化 - 傳址
-            $rRefer = & $result;
+            $rRefer = &$result;
             // 可用的index清單
             $indexs = [];
-            
+
             // 遍歷$keys陣列 - 建構索引位置
             foreach ($keys as $key) {
                 $vKey = null;
-                
+
                 // 取得索引資料 - 從$key
                 if (is_object($row) && isset($row->{$key})) {
                     $vKey = $row->{$key};
                 } elseif (is_array($row) && isset($row[$key])) {
                     $vKey = $row[$key];
                 }
-                
+
                 // 有無法取得索引資料，跳出
                 if (is_null($vKey)) {
                     $getIndex = false;
                     break;
                 }
-                
+
                 // 記錄可用的index
                 $indexs[] = $vKey;
-                
+
                 // 本次索引完成
                 $getIndex = true;
             }
-            
+
             // 略過無法取得索引或索引不完整的資料
-            if (! $getIndex) {
+            if (!$getIndex) {
                 continue;
             }
-            
+
             // 變更位置 - 傳址
             foreach ($indexs as $idx) {
-                $rRefer = & $rRefer[$idx];
+                $rRefer = &$rRefer[$idx];
             }
-            
+
             // 將資料寫入索引位置
             switch ($type) {
                 case 'index':
@@ -433,7 +434,7 @@ class ArrayHelper
                     break;
             }
         }
-        
+
         return $data = $result;
     }
 }
