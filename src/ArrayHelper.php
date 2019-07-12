@@ -7,7 +7,7 @@ namespace marsapp\helper\myarray;
  * 
  * Array processing library, providing functions such as rebuilding indexes, grouping, getting content, recursive difference sets, recursive sorting, etc.
  * 
- * @version 0.3.1
+ * @version 0.3.2
  * @author Mars Hung <tfaredxj@gmail.com>
  * @see https://github.com/marshung24/ArrayHelper
  */
@@ -30,44 +30,92 @@ class ArrayHelper
 
     /**
      * Data re-index by keys
-     *
-     * @param mixed $data Array/stdClass data for handling
-     * @param mixed $keys keys for index key (Array/string)
-     * @param boolean $obj2array stdClass convert to array
+     * 
+     * - When $outputBy="return", $data will change after indexBy() is executed.  
+     *   Since $data is a reference, the return is ArrayHelper. 
+     * - When $outputBy="return", $data is a reference, but the function does not change it.  
+     *   Instead, use the $data content as a reference for the output data content.
+     *   ex.
+     *   // Processing :
+     *   $return  = ArrayHelper::indexBy($data, ['id', 'name']);
+     *   // Reference status :
+     *   $return[$id][$name] = & $row = & $data[$key];
+     * 
+     * @param array $data Array data for handling
+     * @param string|array $keys keys for index key (Array/string)
+     * @param string $outputBy reference(default)/return
      * @return mixed Result with indexBy Keys
      */
-    public static function indexBy(&$data, $keys, $obj2array = false)
+    public static function indexBy(array &$data, $keys, $outputBy = 'reference')
     {
         // Refactor Array $data structure by $keys
-        return self::_refactorBy($data, $keys, $obj2array, $type = 'indexBy');
+        $opt = self::_refactorBy($data, $keys, $type = 'indexBy');
+
+        if ($outputBy === 'reference') {
+            // Output by reference
+            $data = $opt;
+            return new static();
+        } else {
+            // Output by return
+            return $opt;
+        }
     }
 
     /**
      * Group by keys
      * 
-     * Data re-index and Group by keys
+     * Data re-index and Group by keys.
+     * - When $outputBy="return", $data will change after groupBy() is executed.  
+     *   Since $data is a reference, the return is ArrayHelper. 
+     * - When $outputBy="return", $data is a reference, but the function does not change it.  
+     *   Instead, use the $data content as a reference for the output data content.
+     *   ex.
+     *   // Processing :
+     *   $return  = ArrayHelper::groupBy($data, ['id', 'name']);
+     *   // Reference status :
+     *   $return[$id][$name][$k1] = & $row = & $data[$key];
      * 
-     * @param array|stdClass $data Array/stdClass data for handling
-     * @param string|array $keys
-     * @param boolean $obj2array Array content convert to array (when object)
+     * @param array $data Array data for handling
+     * @param string|array $keys keys for index key (Array/string)
+     * @param string $outputBy reference(default)/return
+     * @return mixed Result with groupBy Keys
      */
-    public static function groupBy(&$data, $keys, $obj2array = false)
+    public static function groupBy(array &$data, $keys, $outputBy = 'reference')
     {
         // Refactor Array $data structure by $keys
-        return self::_refactorBy($data, $keys, $obj2array, $type = 'groupBy');
+        $opt = self::_refactorBy($data, $keys, $type = 'groupBy');
+
+        if ($outputBy === 'reference') {
+            // Output by reference
+            $data = $opt;
+            return new static();
+        } else {
+            // Output by return
+            return $opt;
+        }
     }
 
     /**
      * Data re-index by keys, No Data
      *
-     * @param array|stdClass $data Array/stdClass data for handling
-     * @param string|array $keys
-     * @param boolean $obj2array Array content convert to array (when object)
+     * @param array $data Array data for handling
+     * @param string|array $keyskeys for index key (Array/string)
+     * @param string $outputBy reference(default)/return
+     * @return mixed Result with indexOnly Keys
      */
-    public static function indexOnly(&$data, $keys, $obj2array = false)
+    public static function indexOnly(array &$data, $keys, $outputBy = 'reference')
     {
         // Refactor Array $data structure by $keys
-        return self::_refactorBy($data, $keys, $obj2array, $type = 'indexOnly');
+        $opt = self::_refactorBy($data, $keys, $type = 'indexOnly');
+
+        if ($outputBy === 'reference') {
+            // Output by reference
+            $data = $opt;
+            return new static();
+        } else {
+            // Output by return
+            return $opt;
+        }
     }
 
     /**
@@ -241,17 +289,22 @@ class ArrayHelper
     {
         $diffArray = [];
 
+        // Loop $srcArray
         foreach ($srcArray as $key => $value) {
             if (is_array($contrast) && array_key_exists($key, $contrast)) {
                 if (is_array($value)) {
+                    // Recursive
                     $aRecursiveDiff = self::diffRecursive($value, $contrast[$key]);
                     if (!empty($aRecursiveDiff)) {
+                        // Have Diff, replace origin data
                         $diffArray[$key] = $aRecursiveDiff;
                     }
-                } elseif ($value != $contrast[$key]) {
+                } elseif ($value !== $contrast[$key]) {
+                    // Value(with data type) not the same
                     $diffArray[$key] = $value;
                 }
             } else {
+                // No key or $contrast not array
                 $diffArray[$key] = $value;
             }
         }
@@ -262,8 +315,10 @@ class ArrayHelper
     /**
      * Array Sort Recursive
      * 
+     * - Support: ksort(default), krsort
+     * 
      * @param array $srcArray
-     * @param string $type ksort(default), krsort, sort, rsort
+     * @param string $type ksort(default), krsort
      */
     public static function sortRecursive(array &$srcArray, $type = 'ksort')
     {
@@ -275,12 +330,6 @@ class ArrayHelper
                 break;
             case 'krsort':
                 krsort($srcArray);
-                break;
-            case 'sort':
-                sort($srcArray);
-                break;
-            case 'rsort':
-                rsort($srcArray);
                 break;
         }
 
@@ -358,16 +407,23 @@ class ArrayHelper
 
     /**
      * Refactor Array $data structure by $keys
-     *
-     * @param array|stdClass $data
-     *            Array/stdClass data for handling
+     * 
+     * - When $outputBy="return", $data will change after indexBy() is executed.  
+     *   Since $data is a reference, the return is ArrayHelper. 
+     * - When $outputBy="return", $data is a reference, but the function does not change it.  
+     *   Instead, use the $data content as a reference for the output data content.
+     *   ex.
+     *   // Processing :
+     *   $return  = ArrayHelper::indexBy($data, ['id', 'name']);
+     *   // Reference status :
+     *   $return[$id][$name] = & $row = & $data[$key];
+     * 
+     * @param array $data Array data for handling. Two-dimensional array
      * @param string|array $keys
-     * @param boolean $obj2array
-     *            Array content convert to array (when object)
-     * @param string $type
-     *            indexBy(index)/groupBy(group)/only index,no data(indexOnly/noData)
+     * @param string $type  indexBy/groupBy/indexOnly
+     * @return array $result
      */
-    protected static function _refactorBy(&$data, $keys, $obj2array = false, $type = 'index')
+    protected static function _refactorBy(array &$data, $keys, $type = 'indexBy')
     {
         // 參數處理
         $keys = (array) $keys;
@@ -375,10 +431,10 @@ class ArrayHelper
         $result = [];
 
         // 遍歷待處理陣列
-        foreach ($data as $row) {
+        foreach ($data as &$row) {
             // 旗標，是否取得索引
             $getIndex = false;
-            // 位置初炲化 - 傳址
+            // 位置初始化 - 傳址
             $rRefer = &$result;
             // 可用的index清單
             $indexs = [];
@@ -412,29 +468,26 @@ class ArrayHelper
                 continue;
             }
 
-            // 變更位置 - 傳址
+            // 變更位置 - 傳址 - 為避免傳址設定($rRefer = &$row;)無法設定，取出最後一個索引以免設定歧意
+            $lastIdx = array_pop($indexs);
             foreach ($indexs as $idx) {
                 $rRefer = &$rRefer[$idx];
             }
 
             // 將資料寫入索引位置
             switch ($type) {
-                case 'index':
                 case 'indexBy':
-                default:
-                    $rRefer = $obj2array ? (array) $row : $row;
+                    $rRefer[$lastIdx] = &$row;
                     break;
-                case 'group':
                 case 'groupBy':
-                    $rRefer[] = $obj2array ? (array) $row : $row;
+                    $rRefer[$lastIdx][] = &$row;
                     break;
                 case 'indexOnly':
-                case 'noData':
-                    $rRefer = '';
+                    $rRefer[$lastIdx] = '';
                     break;
             }
         }
 
-        return $data = $result;
+        return $result;
     }
 }

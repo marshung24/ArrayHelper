@@ -11,12 +11,16 @@
         }
     ],
     "autoload": {
-        "psr-4": { "marsapp\\helper\\myarray\\": "src", "marsapp\\helper\\test\\myarray\\": "test"}
+        "psr-4": { "marsapp\\helper\\myarray\\": "src"}
+    },
+    "autoload-dev": {
+        "psr-4": { "marsapp\\helper\\tests\\myarray\\": "tests"}
     },
     "minimum-stability": "stable",
     "require-dev": {
-        "marsapp/devtools": "*"
+        "phpunit/phpunit": "^6"
     },
     "require": {
+        "php": "^7"
     }
 }
