@@ -159,7 +159,7 @@ class ArrayHelper
                 if ($exception) {
                     throw new \Exception('Error index: ' . implode(' => ', $indexed), 400);
                 } else {
-                    $data = [];
+                    $data = null;
                     break;
                 }
             }

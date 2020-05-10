@@ -6,7 +6,11 @@ Array processing library, providing functions such as rebuilding indexes, groupi
 [![Latest Stable Version](https://poser.pugx.org/marsapp/arrayhelper/v/stable)](https://packagist.org/packages/marsapp/arrayhelper) [![Total Downloads](https://poser.pugx.org/marsapp/arrayhelper/downloads)](https://packagist.org/packages/marsapp/arrayhelper) [![Latest Unstable Version](https://poser.pugx.org/marsapp/arrayhelper/v/unstable)](https://packagist.org/packages/marsapp/arrayhelper) [![License](https://poser.pugx.org/marsapp/arrayhelper/license)](https://packagist.org/packages/marsapp/arrayhelper)
 
 # Outline
+- [ArrayHelper](#arrayhelper)
+- [Outline](#outline)
 - [Installation](#installation)
+  - [Composer Install](#composer-install)
+  - [Include](#include)
 - [Usage](#usage)
   - [Example](#example)
 - [API Reference](#api-reference)
@@ -251,7 +255,7 @@ $output = ArrayHelper::getContent($data, ['user', 'name']);
 // No target
 $output = ArrayHelper::getContent($data, 'user, name, aaa');
 $output = ArrayHelper::getContent($data, ['user', 'name', 'aaa']);
-// $outpu: []
+// $outpu: null
 ```
 
 ## [getFallContent()](#outline)

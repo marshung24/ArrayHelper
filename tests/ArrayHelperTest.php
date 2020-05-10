@@ -300,16 +300,16 @@ class ArrayHelperTest extends TestCase
          */
         // Return empty array
         $output = ArrayHelper::getContent($data, ['user', 'name', 'aaa']);
-        // $outpu: []
-        $this->assertEquals($output, []);
+        // $outpu: null
+        $this->assertEquals($output, null);
         // Throw exception
         try {
             $output = 'NoException';
             ArrayHelper::getContent($data, ['user', 'name', 'aaa'], true);
         } catch (Exception $e) {
-            $output = 'NoException';
+            $output = 'Exception';
         }
-        $this->assertEquals($output, 'NoException');
+        $this->assertEquals($output, 'Exception');
     }
 
     /**
